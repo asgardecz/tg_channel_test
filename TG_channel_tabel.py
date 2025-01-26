@@ -1,3 +1,4 @@
+import os.path
 from datetime import datetime
 import json
 class Company:
@@ -46,16 +47,45 @@ class NoteManager:
             return list(self.companys.keys())
 
     def save_to_file(self, filename):
+        folder = os.path.dirname(filename)
+        if folder and not os.path.exists(folder):
+            os.makedirs(folder)
+
+
         with open(filename, 'w', encoding='utf-8') as file:
             data = {
-                name: [vars(note) for note in company.notes]
+                name: [
+                    {
+                        "date": note.date.strftime("%d.%m"),
+                        "place": note.place,
+                        "work": note.work
+                    }
+                    for note in company.notes
+                ]
                 for name, company in self.companys.items()
             }
             json.dump(data, file, ensure_ascii=False, indent=4)
 
+
+
+
+
+
     def load_from_file(self, filename):
+        if not os.path.exists(filename):
+            self.companys = {}
+            return
+
+
         try:
             with open(filename, 'r', encoding='utf-8') as file:
+                content = file.read()
+                if not content.strip():
+                    self.companys = {}
+                    return
+
+
+
                 data = json.load(file)
                 for name, notes in data.items():
                     company = Company()
@@ -65,29 +95,22 @@ class NoteManager:
                         company.notes.append(note)
                     self.companys[name] = company
         except FileNotFoundError:
-            print("Файл с данными не найден. Начинаем с пустого списка.")
-
-
-
-
-
-
-
-
-
-
+            return
 
 
 
 
 if __name__ == '__main__':
-
     manager = NoteManager()
-name_company = input('Введите название компании - ')
-manager.add_company(name_company)
+    #manager.load_from_file("data/allReport.json")
 
-place = input('Место работы - ')
-work = input('Что было сделано - ')
-manager.add_work(name_company, place, work)   #всегда ссылайся сначала на класс, затем на функцию
+    name_company = input('Введите название компании - ')
+    manager.add_company(name_company)
 
-manager.get_ready_report_for_company(name_company)
+
+    place = input('Место работы - ')
+    work = input('Что было сделано - ')
+    manager.add_work(name_company, place, work)   #всегда ссылайся сначала на класс, затем на функцию
+
+    manager.get_ready_report_for_company(name_company)
+    manager.save_to_file("data/allReport.json")
