@@ -16,9 +16,8 @@ class NoteManager:
         self.companys = {}  # словарь компаний
 
     def add_company(self, name_company):
-        if name_company in self.companys:
-            name_company = name_company
-        self.companys[name_company] = Company()
+        if name_company not in self.companys:
+            self.companys[name_company] = Company()
 
     def add_work(self, name_company, place, work):
         task = Parametr(place, work)
@@ -105,7 +104,6 @@ if __name__ == '__main__':
 
     name_company = input('Введите название компании - ')
     manager.add_company(name_company)
-
 
     place = input('Место работы - ')
     work = input('Что было сделано - ')
