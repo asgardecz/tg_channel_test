@@ -58,7 +58,6 @@ class NoteManager:
                     #return
 
                 data = json.load(file)
-                print(data)
                 for name, notes in data.items():
                     company = Company()
                     for note_data in notes:
@@ -90,7 +89,6 @@ class NoteManager:
                 ]
                 for name, company in self.companys.items()
             }
-            print(data)
             json.dump(data, file, ensure_ascii=False, indent=4)
 
 
